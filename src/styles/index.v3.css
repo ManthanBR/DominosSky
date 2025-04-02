@@ -1,21 +1,7 @@
-/* Add these styles */
-#video-preview {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh; /* Use vh for full viewport height */
-  object-fit: cover; /* Cover the area, might crop */
-  z-index: 500; /* Below controls, above canvas potentially */
-  background-color: black; /* Optional: background for letterboxing */
-}
-
-
 body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: black; /* Add a background color */
 }
 
 #canvas {
@@ -23,16 +9,14 @@ body {
   top: 0;
   left: 0;
   width: 100vw;
-  /* height: 100vh; */ /* Canvas height is set by JS */
   z-index: 1;
-  object-fit: cover; /* Ensure canvas content covers */
 }
 
 .poweredbysnap-logo {
   width: auto; /* Set to auto to avoid stretching */
   position: absolute; /* Position relative to the viewport */
-  bottom: 20px; /* Adjust to desired distance from the bottom */
-  left: 20px; /* Adjust to desired distance from the left */
+  bottom: -40px; /* Adjust to desired distance from the bottom */
+  left: 40px; /* Adjust to desired distance from the left */
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Align content within the element to the left */
@@ -40,39 +24,37 @@ body {
 }
 
 .poweredbysnap-logo > img {
-   width: 140px; /* Slightly smaller */
+  width: 180px;
 }
-
 
 #controls {
   position: absolute;
-  bottom: 5%; /* Adjusted position */
+  bottom: 10%;
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center; /* Center items vertically */
   z-index: 999;
 }
 
 #outline {
   position: absolute;
-  /* bottom: 10%; Removed, now centered via parent #controls */
-  /* left: 50%; Removed, now centered via parent #controls */
-  /* transform: translateX(-50%); Removed */
-  height: var(--button-size, 90px); /* Adjusted size */
-  width: var(--button-size, 90px);
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: var(--button-size, 200px); /* Default for mobile */
+  width: var(--button-size, 200px);
   border: none;
   z-index: 900;
   transition: background-color 0.2s ease;
 }
 
 #record-button {
-  position: relative; /* Change from absolute */
-  /* bottom: 10%; Removed */
-  /* left: 50%; Removed */
-  /* transform: translateX(-50%); Removed */
-  height: var(--button-size, 75px); /* Adjusted size */
-  width: var(--button-size, 75px);
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: var(--button-size, 200px); /* Default for mobile */
+  width: var(--button-size, 200px);
   background-image: url("../assets/RecordButton.png");
   background-size: cover;
   background-position: center;
@@ -82,39 +64,37 @@ body {
   border: none;
   z-index: 1000;
   transition: background-color 0.2s ease;
-  cursor: pointer;
 }
 
 #record-button.pressed {
-  /* background-color: green; */ /* Using image change instead */
-  content: ""; /* Remove text */
+  background-color: green; /* Change to green when pressed */
+  content: "Recording..."; /* Optionally add text */
 }
 
 #action-buttons {
   position: absolute;
-  bottom: 5%; /* Match record button vertical position */
-  left: 50%;
-  transform: translate(-50%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 30px; /* Add space between buttons */
-  z-index: 1000;
-  flex-wrap: nowrap; /* Prevent wrapping */
+  bottom: 20%; /* Adjust the distance from the bottom of the screen */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%); /* Offset by half the width and height */
+  display: flex; /* Enables flex layout */
+  justify-content: center; /* Aligns buttons horizontally */
+  align-items: center; /* Aligns buttons vertically */
+  z-index: 1000; /* Ensure visibility above other elements */
+  flex-wrap: wrap; /* Allows wrapping if container width is too small */
 }
 
 #back-button-container {
   position: absolute;
-  top: 20px; /* Use px for consistency */
-  left: 20px;
+  top: 2%;
+  left: 3%;
   z-index: 1000;
 }
 
 #back-button {
   transform: none;
   background-color: transparent;
-  height: 50px; /* Adjusted size */
-  width: 50px;
+  height: 100px;
+  width: 100px;
   color: transparent;
   border: none;
   cursor: pointer;
@@ -126,20 +106,21 @@ body {
   -webkit-touch-callout: none;
 }
 #back-button img {
+  /* Add this if your button uses an image */
   max-width: 100%;
   max-height: 100%;
   height: auto;
 }
 
 #back-button:active {
-  transform: scale(0.9); /* Simple scale effect */
+  transform: translate(2px, 2px);
 }
 
-#share-button, #download-button {
-  height: 65px; /* Adjusted size */
-  width: 65px;
+#share-button {
+  height: 150px;
+  width: 150px;
   background-color: transparent;
-  transform: none; /* Remove previous transforms */
+  transform: translate(-25%, 0);
   color: transparent;
   border: none;
   cursor: pointer;
@@ -151,73 +132,81 @@ body {
   -webkit-touch-callout: none;
 }
 
-#share-button img, #download-button img {
+#share-button img {
   max-width: 100%;
   max-height: 100%;
   height: auto;
 }
 
-#share-button:active, #download-button:active {
-  transform: scale(0.9); /* Simple scale effect */
-}
-
-/* Remove specific transforms from action buttons */
-/*
-#share-button {
-  transform: translate(-25%, 0);
-}
 #share-button:active {
   transform: translate(calc(-25% + 2px), 2px);
 }
+
 #download-button {
+  height: 150px;
+  width: 150px;
+  background-color: transparent;
   transform: translate(25%, 0);
+  color: transparent;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  padding: 0%;
+  transition: transform 0.15s ease-in-out;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
+
+#download-button img {
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+}
+
 #download-button:active {
   transform: translate(calc(25% + 2px), 2px);
 }
-*/
 
 #switch-cam {
   position: absolute;
-  top: 20px; /* Use px */
-  right: 20px; /* Use px */
+  top: 3%;
+  right: 5%;
   z-index: 950;
 }
 
 #switch-button {
-  height: 50px; /* Adjusted size */
-  width: 50px;
-  background-image: url("../assets/SwitchButton.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  height: 70px;
+  width: 70px;
+  background-image: url("../assets/SwitchButton.png"); /* Green background */
+  background-size: contain; /* Ensure the image covers the button */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Preent tiling */
   background-color: transparent;
   border: none;
-  user-select: none;
+  user-select: none; /* Disable text selection */
   outline: none;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease; /* Smooth hover animation */
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  cursor: pointer;
 }
 
 #switch-button:active {
-  transform: scale(0.9); /* Simple scale effect */
+  transform: translate(5%, 5%); /* Only scale without affecting translation */
 }
 
 #loading {
-  position: fixed; /* Use fixed to center in viewport */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Center perfectly */
-  z-index: 1100; /* Ensure it's above everything */
+  position: absolute;
+  top: 30%;
+  left: 40%;
+  z-index: 900;
   display: none; /* Hidden by default */
 }
 
 #loading-icon {
-  height: 80px; /* Adjusted size */
-  width: 80px;
-  animation: spin 1.5s linear infinite; /* Slightly faster spin */
+  height: 200px;
+  width: 200px;
+  animation: spin 2s linear infinite; /* Apply the spin animation */
 }
 
 /* Keyframes for the rotation */
@@ -231,18 +220,20 @@ body {
 }
 
 /* Desktop-specific styles */
-.desktop #outline {
-   height: 90px; /* Keep outline slightly larger */
-   width: 90px;
-}
+.desktop #outline,
 .desktop #record-button {
-  height: 75px;
-  width: 75px;
+  height: 70px;
+  width: 70px;
 }
 
-.desktop #share-button, .desktop #download-button {
-  height: 65px;
-  width: 65px;
+.desktop #share-button {
+  height: 70px;
+  width: 70px;
+}
+
+.desktop #download-button {
+  height: 70px;
+  width: 70px;
 }
 
 .desktop #back-button {
@@ -252,10 +243,5 @@ body {
 
 /* Hide switch button on desktop */
 .desktop #switch-cam {
-  display: none;
-}
-
-/* Ensure canvas and video don't conflict when preview is active */
-body.preview-active #canvas {
   display: none;
 }
