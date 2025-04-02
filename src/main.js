@@ -88,17 +88,32 @@ import { Settings } from "./settings"
     session = await cameraKit.createSession({ liveRenderTarget });
     console.log("Session created.");
 
-    session.events.on('error', (event) => {
-        console.error('Camera Kit Session Error:', event.detail);
+    // --- CORRECTED EVENT LISTENER ---
+    session.addEventListener('error', (event) => {
+        // The event object structure might vary slightly, but 'event.detail' is common
+        // Log the whole event first to be sure
+        console.error('Camera Kit Session Error Event:', event);
+
+        // Access error details (adjust based on actual event structure logged above)
+        const errorDetail = event.detail || event.error || event; // Try common properties
+
+        console.error('Camera Kit Session Error Detail:', errorDetail);
+
         // Display a non-fatal error to the user if possible
-         if (event.detail.error?.message?.includes('Unauthorized')) {
+         if (errorDetail?.message?.includes('Unauthorized')) {
              alert('Camera Kit API Token is invalid or expired. Lens features may not work correctly.');
-         } else if (event.detail.error?.type === 'LensExecutionError') {
-              console.warn("Lens execution error occurred:", event.detail.error);
-              // Maybe inform user the lens crashed but continue? Or attempt reload?
-              // alert("The AR Lens encountered an error.");
+         } else if (errorDetail?.type === 'LensExecutionError' || errorDetail?.name === 'LensExecutionError') {
+              console.warn("Lens execution error occurred:", errorDetail);
+              // Inform the user the lens might not be working, but the app can continue
+              alert("The AR Lens encountered an error and might not display correctly.");
+         } else {
+             // Generic session error
+             console.warn("An unknown Camera Kit session error occurred:", errorDetail);
+             // Avoid alerting for every minor session issue unless critical
          }
     });
+    // --- END OF CORRECTION ---
+
 
     // --- 4. Create and Set Source ---
     console.log("Creating media stream source...");
@@ -106,7 +121,6 @@ import { Settings } from "./settings"
         cameraType: cameraManager.isBackFacing ? "environment" : "user",
         // It's generally recommended to disable source audio if you handle audio separately
         // for recording, but keep it if CameraKit needs it or for simplicity.
-        // Let's keep it enabled as per original code unless issues arise.
         disableSourceAudio: false,
     });
     console.log("Setting source to session...");
