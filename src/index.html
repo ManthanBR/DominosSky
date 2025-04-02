@@ -196,55 +196,58 @@
            display: block;
        }
 
-         .preview-modal {
-            display: none; /* Initially hidden */
-           position: fixed;
-             top: 0;
-             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-           backdrop-filter: blur(10px);
-           /* Changed from justify/align to explicit flex */
-           display: flex;
-           flex-direction: column;
-           justify-content: center;
-            align-items: center;
-             z-index: 1000;
-           opacity: 0;
-            transition: opacity 0.3s ease;
-            padding: 20px; /* Add padding */
-            box-sizing: border-box; /* Include padding in dimensions */
-         }
+       .preview-modal {
+    display: none; /* <-- CHANGE: Default state is NOT displayed */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    /* display: flex; */ /* <-- REMOVE from base rule */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0; /* Start transparent for fade-in */
+    transition: opacity 0.3s ease; /* Transition opacity only */
+    padding: 20px;
+    box-sizing: border-box;
+    /* pointer-events: none; */ /* Not strictly needed if display: none */
+ }
 
-         .preview-modal.show {
-           display: flex; /* Use flex when shown */
-           opacity: 1;
-         }
+ .preview-modal.show {
+   display: flex; /* <-- ADD: Become a flex container ONLY when shown */
+   opacity: 1; /* Fade in */
+   /* pointer-events: auto; */ /* Implied by display:flex */
+ }
 
-       .preview-modal video {
-           max-width: 90%;
-             max-height: 70%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-           transition: transform 0.3s ease;
-           transform: translateY(-20px);
-           background-color: #000; /* Add black background to video area */
-           display: block; /* Ensure video behaves as block */
-           margin: 0 auto; /* Center video if container is wider */
-       }
+ /* Keep the rest of the styles for video, buttons, etc. as they were */
+ .preview-modal video {
+     max-width: 90%;
+     max-height: 70%;
+     border-radius: 10px;
+     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+     /* Remove transform transition here if added before, */
+     /* as the display change handles appearance */
+     /* transition: transform 0.3s ease; */
+     /* transform: translateY(-20px); */
+     background-color: #000;
+     display: block;
+     margin: 0 auto;
+ }
 
+ /* Optional: Re-add subtle animation on show if desired */
+ /* .preview-modal.show video { */
+     /* Add animation if you like */
+ /* } */
 
-        .preview-modal.show video {
-            transform: translateY(0);
-        }
-
-
-         .preview-modal .buttons-container {
-            display: flex;
-             margin-top: 30px;
-             gap: 15px;
-         }
+ .preview-modal .buttons-container {
+    display: flex;
+    margin-top: 30px;
+    gap: 15px;
+ }
 
 
          .preview-modal button {

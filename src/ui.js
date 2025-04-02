@@ -138,28 +138,25 @@ export class UIManager {
 
   hidePreviewModal() {
     if (this.previewVideo.src) {
-        URL.revokeObjectURL(this.previewVideo.src) // Clean up object URL
-        this.previewVideo.removeAttribute('src'); // Remove src
-        this.previewVideo.load(); // Reset video element
+        URL.revokeObjectURL(this.previewVideo.src)
+        this.previewVideo.removeAttribute('src');
+        this.previewVideo.load();
     }
-    this.previewModal.classList.remove("show") // Hide modal using class for opacity transition
+    this.previewModal.classList.remove("show") // Just remove the class
 
-    // --- ADD THIS LINE ---
-    this.previewModal.style.display = 'none'; // Explicitly remove from layout
-    // --- END OF ADDED LINE ---
-
+    // --- REMOVE THIS LINE (or comment out) ---
+    // this.previewModal.style.display = 'none';
+    // --- END OF REMOVED LINE ---
 
     // Reset UI state
-    this.recordButton.style.display = 'flex'; // Show record button again
-    this.flipButton.style.display = 'flex';   // Show flip button again
-    this.setRecordingState(false); // Ensure recording state is reset visually
+    this.recordButton.style.display = 'flex';
+    this.flipButton.style.display = 'flex';
+    this.setRecordingState(false);
 
-    // Crucially, reset recorder variables AFTER closing the modal
     if (this.mediaRecorderManager) {
         this.mediaRecorderManager.resetRecordingVariables();
     }
 
-    // Re-enable buttons potentially disabled during processing
     this.recordButton.disabled = false;
     this.flipButton.disabled = false;
   }
