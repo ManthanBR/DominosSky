@@ -142,7 +142,12 @@ export class UIManager {
         this.previewVideo.removeAttribute('src'); // Remove src
         this.previewVideo.load(); // Reset video element
     }
-    this.previewModal.classList.remove("show") // Hide modal
+    this.previewModal.classList.remove("show") // Hide modal using class for opacity transition
+
+    // --- ADD THIS LINE ---
+    this.previewModal.style.display = 'none'; // Explicitly remove from layout
+    // --- END OF ADDED LINE ---
+
 
     // Reset UI state
     this.recordButton.style.display = 'flex'; // Show record button again
@@ -157,7 +162,6 @@ export class UIManager {
     // Re-enable buttons potentially disabled during processing
     this.recordButton.disabled = false;
     this.flipButton.disabled = false;
-
   }
 
 
