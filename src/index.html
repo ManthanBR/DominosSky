@@ -1,43 +1,346 @@
 <!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Camera Kit Template</title>
-    <meta name="description" content="Camera Kit Template" />
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <!-- Added Viewport Meta Tag from new HTML -->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <!-- Kept original Meta Info -->
+    <title>Camera Kit Integration</title>
+    <meta name="description" content="Camera Kit with New UI" />
     <meta name="robots" content="noindex" />
-    <script type="module" src="/src/main.js"></script>
-  </head>
 
-  <body>
+    <!-- Added Font Imports from new HTML -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Included CSS directly from the new HTML example -->
+    <style>
+        body {
+             margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+              background-color: #f0f0f0; /* light background */
+            font-family: 'Roboto', sans-serif;
+              color: #333; /* Dark text color for contrast */
+        }
+        canvas {
+            position: absolute; /* Ensure canvas is layerable */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1; /* Behind controls */
+        }
+        .flip-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+             background-color: rgba(0, 0, 0, 0.1); /* light background for button*/
+             border: none;
+            cursor: pointer;
+            position: absolute;
+             bottom: 55px; /* Adjusted position relative to new record button */
+            right: 40px;
+             margin-right: -20px; /* Keep offset */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, background-color 0.2s ease; /* Added background transition */
+            z-index: 10; /* Above canvas */
+        }
+
+        .flip-button:hover {
+            transform: scale(1.1);
+            background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on hover */
+        }
+
+        .flip-button::before {
+            content: "";
+            background-image: url("/flip.png"); /* Ensure this path is correct */
+             width: 24px;
+            height: 24px;
+           background-size: contain;
+            background-repeat: no-repeat;
+             background-position: center;
+            transform: rotate(var(--current-rotation, 0deg));
+             transition: transform 0.3s ease;
+             filter: invert(1); /* Make icon white/visible on dark bg */
+        }
+
+        .flip-button.animate-flip::before {
+           /* Rotation handled by --current-rotation variable and transition */
+        }
+
+        .record-button {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #ddd; /* Light background for record button */
+            border: none;
+            cursor: pointer;
+            position: absolute;
+            transition: transform 0.2s ease, background-color 0.2s ease; /* Added background transition */
+             bottom: 40px;
+            left: 50%;
+            transform: translate(-50%, 0%);
+           display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible; /* Allow progress ring to show */
+            z-index: 10; /* Above canvas */
+        }
+
+        .record-button:hover {
+            /* Keep original hover scale but adjust translate */
+             transform: scale(1.1) translate(-45.45%, 0%); /* Approximate adjustment for scale */
+            background-color: #ccc; /* Slightly darker on hover */
+        }
+
+         .record-button::before {
+            content: "";
+            position: absolute;
+             width: 60px;
+             height: 60px;
+            border-radius: 50%;
+           border: 4px solid rgba(0, 0, 0, 0.1);
+           box-sizing: border-box;
+           top: 50%; /* Center the border ring */
+           left: 50%;
+           transform: translate(-50%, -50%);
+         }
+
+        .progress-ring {
+           display: none; /* Initially hidden */
+            position: absolute;
+            left: 50%;
+           top: 50%;
+             transform: translate(-50%, -50%);
+           width: 70px;
+             height: 70px;
+             pointer-events: none;
+        }
+
+        .progress-ring svg {
+             display: block;
+             /* Rotate SVG container to start path at the top */
+             transform: rotate(-90deg);
+        }
+
+
+        .progress-ring circle {
+            fill: none;
+             stroke: rgba(0,0,0, 0.2); /* Use dark color for circle background */
+            stroke-width: 4;
+            r: 30; /* (70/2) - (4/2) = 33 approx. Use 30 for visual fit */
+            cx: 35;
+            cy: 35;
+            transform-origin: center;
+         }
+
+
+        .progress-ring path {
+           fill: none;
+           stroke: #ff4d4d; /* Use red for progress color */
+           stroke-width: 4;
+            /* Circumference: 2 * pi * r = 2 * 3.14159 * 30 = ~188.5 */
+            stroke-dasharray: 188.5;
+            stroke-dashoffset: 188.5; /* Start fully empty */
+            transform-origin: center;
+            /* Removed transition from here - applied in JS if needed */
+            /* transition: stroke-dashoffset 0.25s linear; */
+            d: path("M 35 5 A 30 30 0 1 1 34.99 5 Z"); /* Correct path for circle */
+
+        }
+
+        .red-dot {
+            position: absolute;
+             width: 20px; /* Slightly larger dot */
+            height: 20px;
+             border-radius: 50%;
+              background-color: #ff4d4d; /* Red color for recording dot */
+             opacity: 0;
+             transition: opacity 0.2s ease;
+             /* Centered within the button */
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+             z-index: 11; /* Above the border ring */
+            }
+
+         .record-button.recording .red-dot {
+             opacity: 1;
+            animation: pulse 1.2s infinite ease-in-out; /* Added easing */
+        }
+
+       @keyframes pulse {
+            0% {
+             transform: translate(-50%, -50%) scale(1);
+           }
+           50% {
+             transform: translate(-50%, -50%) scale(1.2);
+            }
+          100% {
+              transform: translate(-50%, -50%) scale(1);
+           }
+       }
+
+        /* Make progress ring visible when recording */
+       .record-button.recording .progress-ring {
+           display: block;
+       }
+
+         .preview-modal {
+            display: none; /* Initially hidden */
+           position: fixed;
+             top: 0;
+             left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+           backdrop-filter: blur(10px);
+           /* Changed from justify/align to explicit flex */
+           display: flex;
+           flex-direction: column;
+           justify-content: center;
+            align-items: center;
+             z-index: 1000;
+           opacity: 0;
+            transition: opacity 0.3s ease;
+            padding: 20px; /* Add padding */
+            box-sizing: border-box; /* Include padding in dimensions */
+         }
+
+         .preview-modal.show {
+           display: flex; /* Use flex when shown */
+           opacity: 1;
+         }
+
+       .preview-modal video {
+           max-width: 90%;
+             max-height: 70%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+           transition: transform 0.3s ease;
+           transform: translateY(-20px);
+           background-color: #000; /* Add black background to video area */
+           display: block; /* Ensure video behaves as block */
+           margin: 0 auto; /* Center video if container is wider */
+       }
+
+
+        .preview-modal.show video {
+            transform: translateY(0);
+        }
+
+
+         .preview-modal .buttons-container {
+            display: flex;
+             margin-top: 30px;
+             gap: 15px;
+         }
+
+
+         .preview-modal button {
+             background-color: rgba(255,255,255,0.8); /* light background */
+            padding: 10px 20px;
+            border-radius: 25px;
+             cursor: pointer;
+            border: none;
+             color: #333; /* Dark text color for buttons */
+            font-size: 16px;
+            transition: background-color 0.2s ease;
+             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-family: 'Raleway', sans-serif;
+         }
+
+        .preview-modal button:hover {
+           background-color: rgba(255,255,255,0.9);
+        }
+
+
+        .close-modal-button {
+          position: absolute;
+            top: 15px; /* Adjusted top spacing */
+           right: 15px; /* Adjusted right spacing */
+            background-color: rgba(255,255,255,0.4); /* Semi transparent light background */
+            border: none;
+           color: #333;
+             font-size: 25px;
+            border-radius: 100%;
+            width: 30px;
+           height: 30px;
+           cursor: pointer;
+           display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1; /* Vertically center the X */
+         }
+         /* Loading Indicator (Simple overlay) */
+         #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            z-index: 2000; /* Above everything */
+            font-family: 'Roboto', sans-serif;
+         }
+         #loading-overlay.show {
+            display: flex;
+         }
+    </style>
+</head>
+<body>
+    <!-- Canvas for Camera Kit -->
     <canvas id="canvas"></canvas>
-    <div id="switch-cam">
-      <button id="switch-button" class="button-class"></button>
-    </div>
-    <div class="poweredbysnap-logo">
-      <img id="image" src="../assets/Powered_bysnap.png" alt="Powered by Snap" />
-    </div>
-    <div id="controls">
-      <img id="outline" src="../assets/RecordOutline.png" />
-      <button id="record-button" class="button-class"></button>
+
+    <!-- Record Button -->
+    <button class="record-button" id="record-button" aria-label="Start Recording">
+        <div class="red-dot"></div>
+        <div class="progress-ring" id="progress-ring">
+            <svg width="100%" height="100%" viewBox="0 0 70 70">
+                <circle cx="35" cy="35" r="30"/>
+                <!-- Path definition corrected for circle SVG -->
+                <path id="progress-path" d="M 35 5 A 30 30 0 1 1 34.99 5 Z"/>
+            </svg>
+        </div>
+    </button>
+
+    <!-- Flip Camera Button -->
+    <button class="flip-button" id="flip-button" aria-label="Flip Camera"></button>
+
+    <!-- Preview Modal -->
+    <div class="preview-modal" id="preview-modal">
+        <button class="close-modal-button" id="close-modal-button">
+            ×
+        </button>
+        <video id="preview-video" controls></video>
+        <div class="buttons-container">
+            <button id="share-button">Share</button>
+            <!-- Renamed download to save -->
+            <button id="save-button">Save</button>
+        </div>
     </div>
 
-    <div id="action-buttons" style="display: none">
-      <button id="share-button" class="button-class">
-        <img id="shareImg" src="../assets/ShareButton.png" alt="share" />
-      </button>
-      <button id="download-button" class="button-class">
-        <img id="downloadImg" src="../assets/DownloadButton.png" alt="download" />
-      </button>
+    <!-- Simple Loading Overlay -->
+    <div id="loading-overlay">
+        Processing...
     </div>
 
-    <div id="back-button-container" style="display: none">
-      <button id="back-button" class="button-class">
-        <img id="backImg" src="../assets/BackButton.png" alt="back" />
-      </button>
-    </div>
-
-    <div id="loading">
-      <img id="loading-icon" src="../assets/LoadingIcon.png" alt="loading" />
-    </div>
-  </body>
+    <!-- Main Script -->
+    <script type="module" src="/src/main.js"></script>
+</body>
 </html>
