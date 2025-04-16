@@ -33,7 +33,7 @@ export const Settings = {
   recording: {
     mimeType: "video/mp4",
     fps: 60,
-    outputFileName: "WeWorkSticker.mp4",
+    outputFileName: "Dominos.mp4",
   },
 
   // FFmpeg settings
