@@ -69,7 +69,7 @@ export class UIManager {
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({
             files: [file],
-            title: "Wework sticker",
+            title: "Dominos",
             text: "Made By FilterYou | A True Social Xperience",
           })
           console.log("File shared successfully")
