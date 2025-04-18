@@ -1,3 +1,32 @@
+/* Add styles for the new tap-to-record image */
+#tap-to-record-image {
+  position: absolute;
+  /* Position it above the record button (10% + button height + gap) */
+  bottom: calc(10% + var(--button-size, 200px) + 10px); 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px; /* Adjust size as needed */
+  height: auto;
+  z-index: 990; /* Below record button, above outline/canvas */
+  pointer-events: none; /* Prevent it from blocking clicks */
+  transition: opacity 0.3s ease-out; /* Add fade out transition */
+  opacity: 1; /* Start visible */
+}
+
+/* Adjust position for desktop */
+.desktop #tap-to-record-image {
+    /* Use desktop button size (70px) + smaller gap */
+    bottom: calc(10% + 70px + 5px); 
+    width: 100px; /* Adjust desktop size if needed */
+}
+
+/* Style to hide the image - can be added via JS */
+#tap-to-record-image.hidden {
+  opacity: 0;
+}
+
+/* --- Existing CSS Below (for context) --- */
+
 body {
   margin: 0;
   padding: 0;
@@ -33,7 +62,11 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
-  z-index: 999;
+  /* Make sure controls container itself doesn't block pointer events unless needed */
+  /* pointer-events: none; <-- remove this if you had it */
+  /* Ensure children like the button ARE clickable */
+  /* pointer-events: auto; <-- Add this to buttons/interactive elements if needed */
+  z-index: 999; /* Ensure controls container z-index allows elements within it to be layered */
 }
 
 #outline {
@@ -46,6 +79,7 @@ body {
   border: none;
   z-index: 900;
   transition: background-color 0.2s ease;
+  pointer-events: none; /* Outline shouldn't be interactive */
 }
 
 #record-button {
@@ -62,8 +96,9 @@ body {
   background-color: transparent;
   border-radius: 50%;
   border: none;
-  z-index: 1000;
+  z-index: 1000; /* Highest z-index for interaction */
   transition: background-color 0.2s ease;
+  cursor: pointer; /* Add cursor pointer */
 }
 
 #record-button.pressed {

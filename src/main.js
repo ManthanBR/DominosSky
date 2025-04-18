@@ -23,7 +23,7 @@ import { Settings } from "./settings"
   const cameraManager = new CameraManager()
   const videoProcessor = new VideoProcessor()
   const mediaRecorder = new MediaRecorderManager(videoProcessor, uiManager)
-
+  const tapToRecordImage = document.getElementById('tap-to-record-image');
   // Initialize Camera Kit
   const cameraKit = await bootstrapCameraKit({
     apiToken: apiToken,
@@ -60,6 +60,7 @@ import { Settings } from "./settings"
       const success = await mediaRecorder.startRecording(liveRenderTarget, cameraManager.getConstraints())
       if (success) {
         uiManager.updateRecordButtonState(true)
+        tapToRecordImage.style.opacity = '0';
       }
     } else {
       uiManager.updateRecordButtonState(false)
@@ -79,6 +80,7 @@ import { Settings } from "./settings"
       uiManager.backButtonContainer.style.display = "none"
       uiManager.toggleRecordButton(true)
       // Re-apply render size in case the window was resized while showing results
+      tapToRecordImage.style.opacity = '1';
       uiManager.updateRenderSize(source, liveRenderTarget)
     } catch (error) {
       console.error("Error resetting after recording:", error)
